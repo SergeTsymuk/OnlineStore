@@ -11,7 +11,7 @@ using OnlineStore.Data;
 namespace OnlineStore.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20221022173703_InitCreate")]
+    [Migration("20221022204322_InitCreate")]
     partial class InitCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
