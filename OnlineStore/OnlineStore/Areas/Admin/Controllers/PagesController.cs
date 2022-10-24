@@ -36,10 +36,10 @@ namespace OnlineStore.Areas.Admin.Controllers
             return View(page);
         }
 
-        // GET    -- ADMIN/PAGES/CREATE 
+        // Create GET
         public IActionResult Create() => View();
 
-        // POST RREQUEST FOR:  Admin/Pages/Create
+        // Create POST 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Page page)
@@ -65,7 +65,7 @@ namespace OnlineStore.Areas.Admin.Controllers
             return View(page);
         }
 
-        // GET   Admin/Pages/Edit / ID: 5
+        // Edit GET
         public async Task<IActionResult> Edit(int id)
         {
             Page page = await context.Pages.FindAsync(id);
@@ -76,13 +76,14 @@ namespace OnlineStore.Areas.Admin.Controllers
             return View(page);
         }
 
+        // Edit POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Page page)
         {
             if (ModelState.IsValid)
             {
-                page.Slug = page.Id == 1 ? "main page" : page.Title.ToLower().Replace(" ", "-");
+                page.Slug = page.Id == 1 ? "home" : page.Title.ToLower().Replace(" ", "-");
 
                 var slug = await context.Pages.Where(x => x.Id != page.Id).FirstOrDefaultAsync(x => x.Slug == page.Slug);
                 if (slug != null)
@@ -98,6 +99,24 @@ namespace OnlineStore.Areas.Admin.Controllers
                 return RedirectToAction("Edit", new { id = page.Id });
             }
             return View(page);
+        }
+
+        // Delite GET
+        public async Task<IActionResult> Delete(int id)
+        {
+            Page page = await context.Pages.FindAsync(id);
+            if (page == null)
+            {
+                TempData["Error"] = "The page foesn't exist";
+            }
+            else
+            {
+                context.Pages.Remove(page);
+                await context.SaveChangesAsync();
+                TempData["Success"] = "The Page has been Successfully Delited!";
+            }
+            return RedirectToAction("Index");
+
         }
 
     }

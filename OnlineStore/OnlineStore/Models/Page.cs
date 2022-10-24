@@ -8,7 +8,7 @@ namespace OnlineStore.Models
         [Required, MinLength(3, ErrorMessage = "Minimum Lenght is 3 symbols")]
         public string Title { get; set; }
         public string Slug { get; set; }
-        [Required, MinLength(5, ErrorMessage = "Minimum Lenght is 5 symbols")]
+        [Required, MinLength(4, ErrorMessage = "Minimum Lenght is 4 symbols")]
         public string Content { get; set; }
         public int Sorting { get; set; }
     }
