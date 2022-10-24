@@ -33,7 +33,11 @@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>|
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a>|
-                <a asp-action="Delite" asp-route-id="@item.Id">Delite</a>
+                    @if (item.Slug != "main page")
+                    {
+                        <a asp-action="Delite" asp-route-id="@item.Id">Delite</a>
+                    }
+                
             </td>
         </tr>
 }

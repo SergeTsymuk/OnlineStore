@@ -17,7 +17,7 @@ namespace OnlineStore.Areas.Admin.Controllers
             this.context = context;
         }
 
-        // GET RREQUEST FOR / Admin / Pages 
+        // GET  /Admin/Pages 
         public async Task<IActionResult> Index()
         {
             IQueryable<Page> pages = from p in context.Pages orderby p.Sorting select p;
@@ -25,7 +25,7 @@ namespace OnlineStore.Areas.Admin.Controllers
             return View(pagesList);
         }
 
-        // GET RREQUEST FOR / Admin / Pages / Details / ID: 5
+        // GET   Admin/Pages/Details / ID: 5
         public async Task<IActionResult> Details(int id)
         {
             Page page = await context.Pages.FirstOrDefaultAsync(x => x.Id == id);
@@ -36,8 +36,69 @@ namespace OnlineStore.Areas.Admin.Controllers
             return View(page);
         }
 
-        // ADMIN / PAGES / CREATE 
+        // GET    -- ADMIN/PAGES/CREATE 
         public IActionResult Create() => View();
+
+        // POST RREQUEST FOR:  Admin/Pages/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Page page)
+        {
+            if (ModelState.IsValid)
+            {
+                page.Slug = page.Title.ToLower().Replace(" ", "-");
+                page.Sorting = 100;
+
+                var slug = await context.Pages.FirstOrDefaultAsync(x => x.Slug == page.Slug);
+                if (slug != null)
+                {
+                    ModelState.AddModelError("", "The title already exist.");
+                    return View(page);
+                }
+                context.Add(page);
+                await context.SaveChangesAsync();
+
+                TempData["Success"] = "New Page has been Successfully added!";
+
+                return RedirectToAction("Index");
+            }
+            return View(page);
+        }
+
+        // GET   Admin/Pages/Edit / ID: 5
+        public async Task<IActionResult> Edit(int id)
+        {
+            Page page = await context.Pages.FindAsync(id);
+            if (page == null)
+            {
+                return NotFound();
+            }
+            return View(page);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Page page)
+        {
+            if (ModelState.IsValid)
+            {
+                page.Slug = page.Id == 1 ? "main page" : page.Title.ToLower().Replace(" ", "-");
+
+                var slug = await context.Pages.Where(x => x.Id != page.Id).FirstOrDefaultAsync(x => x.Slug == page.Slug);
+                if (slug != null)
+                {
+                    ModelState.AddModelError("", "The Page already exist.");
+                    return View(page);
+                }
+                context.Update(page);
+                await context.SaveChangesAsync();
+
+                TempData["Success"] = "New Page has been Successfully edited!";
+
+                return RedirectToAction("Edit", new { id = page.Id });
+            }
+            return View(page);
+        }
 
     }
 }
