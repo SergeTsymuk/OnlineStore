@@ -8,6 +8,7 @@ namespace OnlineStore.Data
         public StoreContext(DbContextOptions options) : base(options)
         { }
         public DbSet<Page> Pages { get; set; }
+        public DbSet<Category> Categories { get; set; }
         public StoreContext()
         {
             Database.EnsureCreated();

@@ -94,7 +94,7 @@ namespace OnlineStore.Areas.Admin.Controllers
                 context.Update(page);
                 await context.SaveChangesAsync();
 
-                TempData["Success"] = "New Page has been Successfully edited!";
+                TempData["Success"] = "New Page has been edited Successfully!";
 
                 return RedirectToAction("Edit", new { id = page.Id });
             }
@@ -117,6 +117,23 @@ namespace OnlineStore.Areas.Admin.Controllers
             }
             return RedirectToAction("Index");
 
+        }
+
+        // POST reorder
+        [HttpPost]
+        public async Task<IActionResult> Reorder(int[] id)
+        {
+            int count = 1;
+
+            foreach (var item in id)
+            {
+                Page page = await context.Pages.FindAsync(item);
+                page.Sorting = count;
+                context.Update(page);
+                context.SaveChanges();
+                count++;
+            }
+            return Ok();
         }
 
     }
