@@ -11,16 +11,16 @@ namespace OnlineStore.Areas.Admin.Controllers
     [Area("Admin")]
     public class PagesController : Controller
     {
-        private readonly StoreContext context;
+        private readonly StoreContext _context;
         public PagesController(StoreContext context)
         {
-            this.context = context;
+            _context = context;
         }
 
         // GET  /Admin/Pages 
         public async Task<IActionResult> Index()
         {
-            IQueryable<Page> pages = from p in context.Pages orderby p.Sorting select p;
+            IQueryable<Page> pages = from p in _context.Pages orderby p.Sorting select p;
             List<Page> pagesList = await pages.ToListAsync();
             return View(pagesList);
         }
@@ -28,7 +28,7 @@ namespace OnlineStore.Areas.Admin.Controllers
         // GET   Admin/Pages/Details / ID: 5
         public async Task<IActionResult> Details(int id)
         {
-            Page page = await context.Pages.FirstOrDefaultAsync(x => x.Id == id);
+            Page page = await _context.Pages.FirstOrDefaultAsync(x => x.Id == id);
             if (page == null)
             {
                 return NotFound();
@@ -49,14 +49,14 @@ namespace OnlineStore.Areas.Admin.Controllers
                 page.Slug = page.Title.ToLower().Replace(" ", "-");
                 page.Sorting = 100;
 
-                var slug = await context.Pages.FirstOrDefaultAsync(x => x.Slug == page.Slug);
+                var slug = await _context.Pages.FirstOrDefaultAsync(x => x.Slug == page.Slug);
                 if (slug != null)
                 {
                     ModelState.AddModelError("", "The title already exist.");
                     return View(page);
                 }
-                context.Add(page);
-                await context.SaveChangesAsync();
+                _context.Add(page);
+                await _context.SaveChangesAsync();
 
                 TempData["Success"] = "New Page has been Successfully added!";
 
@@ -68,7 +68,7 @@ namespace OnlineStore.Areas.Admin.Controllers
         // Edit GET
         public async Task<IActionResult> Edit(int id)
         {
-            Page page = await context.Pages.FindAsync(id);
+            Page page = await _context.Pages.FindAsync(id);
             if (page == null)
             {
                 return NotFound();
@@ -85,14 +85,14 @@ namespace OnlineStore.Areas.Admin.Controllers
             {
                 page.Slug = page.Id == 1 ? "home" : page.Title.ToLower().Replace(" ", "-");
 
-                var slug = await context.Pages.Where(x => x.Id != page.Id).FirstOrDefaultAsync(x => x.Slug == page.Slug);
+                var slug = await _context.Pages.Where(x => x.Id != page.Id).FirstOrDefaultAsync(x => x.Slug == page.Slug);
                 if (slug != null)
                 {
                     ModelState.AddModelError("", "The Page already exist.");
                     return View(page);
                 }
-                context.Update(page);
-                await context.SaveChangesAsync();
+                _context.Update(page);
+                await _context.SaveChangesAsync();
 
                 TempData["Success"] = "New Page has been edited Successfully!";
 
@@ -101,22 +101,20 @@ namespace OnlineStore.Areas.Admin.Controllers
             return View(page);
         }
 
-        // Delite GET
         public async Task<IActionResult> Delete(int id)
         {
-            Page page = await context.Pages.FindAsync(id);
+            Page page = await _context.Pages.FindAsync(id);
             if (page == null)
             {
-                TempData["Error"] = "The page foesn't exist";
+                TempData["Error"] = "The page doesn't exist";
             }
             else
             {
-                context.Pages.Remove(page);
-                await context.SaveChangesAsync();
+                _context.Pages.Remove(page);
+                await _context.SaveChangesAsync();
                 TempData["Success"] = "The Page has been Successfully Delited!";
             }
             return RedirectToAction("Index");
-
         }
 
         // POST reorder
@@ -127,10 +125,10 @@ namespace OnlineStore.Areas.Admin.Controllers
 
             foreach (var item in id)
             {
-                Page page = await context.Pages.FindAsync(item);
+                Page page = await _context.Pages.FindAsync(item);
                 page.Sorting = count;
-                context.Update(page);
-                context.SaveChanges();
+                _context.Update(page);
+                _context.SaveChanges();
                 count++;
             }
             return Ok();
