@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OnlineStore.Data;
 using System.Linq;
@@ -18,6 +19,14 @@ namespace OnlineStore.Areas.Admin.Controllers
         public async Task<IActionResult> Index()
         {
             return View(await _context.Products.OrderByDescending(p => p.Id).Include(c => c.Category).ToListAsync());
+        }
+
+        // Create GET
+        public IActionResult Create()
+        {
+            ViewBag.CategoryId = new SelectList(_context.Categories.OrderBy(x => x.Sorting), "Id", "Name");
+            return View();
+
         }
     }
 }
